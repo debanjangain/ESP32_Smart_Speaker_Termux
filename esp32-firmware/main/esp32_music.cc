@@ -84,44 +84,31 @@ extern "C" void app_main(void) {
     ESP_LOGI(TAG, "Connecting to Wi-Fi SSID: %s", WIFI_SSID);
     wifi_init_sta(WIFI_SSID, WIFI_PASS);
 
-    uint8_t buffer[1024];
-    size_t bytes_read;
-
-    while (true) {
-    // Capture audio from mic
-    i2s_read(I2S_NUM_0, buffer, sizeof(buffer), &bytes_read, portMAX_DELAY);
-
-    // Run wake word detection
-    int detected = model->detect(wakenet, (int16_t *)buffer);
-    if (detected) {
-        ESP_LOGI(TAG, "Wake word 'Alexa' detected!");
-        websocket_client_send("WAKE: Alexa", strlen("WAKE: Alexa"));
-    }
-
-    vTaskDelay(pdMS_TO_TICKS(10)); // small delay to avoid watchdog reset
-}
-
     // Step 2: Initialize audio codec (mic + amp)
     audio_codec_init();
 
-    // Load WakeNet model (Alexa)
+    // Step 3: Load WakeNet model (Alexa)
     const esp_sr_wakenet_model_t *model = esp_sr_wakenet_get_model("wn9");
     model_iface_data_t *wakenet = model->create(model);
     ESP_LOGI(TAG, "WakeNet Alexa model initialized.");
 
-    // Step 3: Connect to backend via WebSocket
+    // Step 4: Connect to backend via WebSocket
     ESP_LOGI(TAG, "Connecting to backend server: %s", SERVER_URI);
     websocket_client_start(SERVER_URI);
 
-    // Step 4: Main loop (audio streaming)
+    // Step 5: Main loop (wake word detection + audio streaming)
     uint8_t buffer[1024];
     size_t bytes_read, bytes_written;
 
     while (true) {
         // Capture audio from mic (I2S RX)
         i2s_read(I2S_NUM_0, buffer, sizeof(buffer), &bytes_read, portMAX_DELAY);
-        if (bytes_read > 0) {
-            websocket_client_send(buffer, bytes_read);
+
+        // Run wake word detection
+        int detected = model->detect(wakenet, (int16_t *)buffer);
+        if (detected) {
+            ESP_LOGI(TAG, "Wake word 'Alexa' detected!");
+            websocket_client_send("WAKE: Alexa", strlen("WAKE: Alexa"));
         }
 
         // Receive audio from backend
