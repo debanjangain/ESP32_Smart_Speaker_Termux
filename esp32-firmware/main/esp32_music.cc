@@ -84,6 +84,23 @@ extern "C" void app_main(void) {
     ESP_LOGI(TAG, "Connecting to Wi-Fi SSID: %s", WIFI_SSID);
     wifi_init_sta(WIFI_SSID, WIFI_PASS);
 
+    uint8_t buffer[1024];
+    size_t bytes_read;
+
+    while (true) {
+    // Capture audio from mic
+    i2s_read(I2S_NUM_0, buffer, sizeof(buffer), &bytes_read, portMAX_DELAY);
+
+    // Run wake word detection
+    int detected = model->detect(wakenet, (int16_t *)buffer);
+    if (detected) {
+        ESP_LOGI(TAG, "Wake word 'Alexa' detected!");
+        websocket_client_send("WAKE: Alexa", strlen("WAKE: Alexa"));
+    }
+
+    vTaskDelay(pdMS_TO_TICKS(10)); // small delay to avoid watchdog reset
+}
+
     // Step 2: Initialize audio codec (mic + amp)
     audio_codec_init();
 
