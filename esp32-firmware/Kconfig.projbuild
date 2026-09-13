@@ -18,4 +18,28 @@ config SERVER_URI
     help
         Address of the backend server for audio streaming.
 
+config WAKE_TASK_STACK
+    int "Wake word task stack size"
+    default 4096
+    help
+        Stack size (in bytes) for the wake word detection task.
+
+config WAKE_TASK_PRIORITY
+    int "Wake word task priority"
+    default 5
+    help
+        FreeRTOS priority for the wake word detection task.
+
+config STREAM_TASK_STACK
+    int "Streaming task stack size"
+    default 4096
+    help
+        Stack size (in bytes) for the backend streaming task.
+
+config STREAM_TASK_PRIORITY
+    int "Streaming task priority"
+    default 4
+    help
+        FreeRTOS priority for the backend streaming task.
+
 endmenu
