@@ -87,6 +87,11 @@ extern "C" void app_main(void) {
     // Step 2: Initialize audio codec (mic + amp)
     audio_codec_init();
 
+    // Load WakeNet model (Alexa)
+    const esp_sr_wakenet_model_t *model = esp_sr_wakenet_get_model("wn9");
+    model_iface_data_t *wakenet = model->create(model);
+    ESP_LOGI(TAG, "WakeNet Alexa model initialized.");
+
     // Step 3: Connect to backend via WebSocket
     ESP_LOGI(TAG, "Connecting to backend server: %s", SERVER_URI);
     websocket_client_start(SERVER_URI);
