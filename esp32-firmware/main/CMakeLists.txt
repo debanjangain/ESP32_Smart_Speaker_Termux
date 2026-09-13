@@ -17,6 +17,7 @@ idf_component_register(
     REQUIRES
         audio_codec
         websocket_client
+        wakenet 
 )
 
 # Define project
