@@ -143,6 +143,21 @@ extern "C" void app_main(void) {
     websocket_client_start(SERVER_URI);
 
     // Step 5: Create tasks
-    xTaskCreatePinnedToCore(wake_word_task, "wake_word_task", 4096, NULL, 5, NULL, 0);
-    xTaskCreatePinnedToCore(streaming_task, "streaming_task", 4096, NULL, 4, NULL, 1);
+    xTaskCreatePinnedToCore(
+    wake_word_task,
+    "wake_word_task",
+    CONFIG_WAKE_TASK_STACK,
+    NULL,
+    CONFIG_WAKE_TASK_PRIORITY,
+    NULL,
+    0);
+
+    xTaskCreatePinnedToCore(
+    streaming_task,
+    "streaming_task",
+    CONFIG_STREAM_TASK_STACK,
+    NULL,
+    CONFIG_STREAM_TASK_PRIORITY,
+    NULL,
+    1);
 }
