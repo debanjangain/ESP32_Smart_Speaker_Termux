@@ -1,6 +1,6 @@
 #include "esp32_music.h"
 #include "network_config.c"
-
+#include "esp_sr_wakenet.h"
 #include "driver/i2s.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
