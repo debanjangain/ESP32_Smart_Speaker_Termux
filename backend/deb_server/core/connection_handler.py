@@ -1,27 +1,36 @@
 from core.handle.audio_handler import process_audio
 from core.handle.music_handler import process_music
-from core.handle.llu_handler import process_llu
-from core.handle.memory_handler import process_memory   # NEW
+from core.handle.llm_handler import process_llm
+from core.handle.memory_handler import process_memory
+
 
 async def handle_connection(websocket, path):
-    """
-    Handle each ESP32 connection.
-    Routes messages to the correct handler based on prefix.
-    """
-    async for message in websocket:
-        print(f"[CORE] Received: {message}")
 
-        if message.startswith("AUDIO:"):
-            await process_audio(websocket, message)
+    print("[CORE] Client connected")
 
-        elif message.startswith("MUSIC:"):
-            await process_music(websocket, message)
+    try:
+        async for message in websocket:
 
-        elif message.startswith("LLU:"):
-            await process_llu(websocket, message)
+            print(f"[CORE] Received: {message}")
 
-        elif message.startswith("MEM:"):   # NEW memory prefix
-            await process_memory(websocket, message)
+            if message.startswith("AUDIO:"):
+                await process_audio(websocket, message)
 
-        else:
-            await websocket.send("[CORE] Unknown request type")
+            elif message.startswith("MUSIC:"):
+                await process_music(websocket, message)
+
+            elif message.startswith("LLM:"):
+                await process_llm(websocket, message)
+
+            elif message.startswith("MEM:"):
+                await process_memory(websocket, message)
+
+            else:
+                await websocket.send("[CORE] Unknown request type")
+
+    except Exception as e:
+        print(f"[CORE] Error: {e}")
+
+    finally:
+        print("[CORE] Client disconnected")
+        
