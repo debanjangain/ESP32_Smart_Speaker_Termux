@@ -1,47 +1,64 @@
 server:
-  address: http://192.168.1.50:5000
+  host: "0.0.0.0"
+  port: 8765
+
+voice:
+  wake_word: "Alexa"
+
+  languages:
+    default: "bn"
+    supported:
+      - "bn"
+      - "hi"
+      - "en"
 
 apis:
-  weather: "YOUR_OPENWEATHER_API_KEY"
 
-  # Multiple RSS feeds for news
-  news_feeds:
-    - "http://feeds.bbci.co.uk/news/rss.xml"                # BBC World
-    - "https://news.google.com/rss?hl=en-IN&ceid=IN:en"     # Google News India (English)
-    - "https://www.amarujala.com/rss/uttar-pradesh.xml"     # Amar Ujala Uttar Pradesh
-    - "https://www.amarujala.com/rss/kanpur.xml"            # Amar Ujala Kanpur city feed
-    - "https://www.abpananda.abplive.in/rss/kolkata.xml"    # ABP Ananda Kolkata (Bengali)
+  # Weather
+  openweather_key: "YOUR_OPENWEATHER_API_KEY"
 
-  sports: "YOUR_CRICKET_API_KEY"
-  podcast: "https://api.podcastindex.org"
+  # Cricket scores
+  sports_key: "YOUR_CRICKET_API_KEY"
 
+  # Podcast Index
+  podcast_url: "https://api.podcastindex.org"
+  podcast_key: "YOUR_PODCAST_KEY"
+  podcast_secret: "YOUR_PODCAST_SECRET"
+
+  # Music Providers
   youtube: "yt-dlp"
   youtube_runtime: "quickjs"
 
   jiosaavn: "enabled"
   gaana: "enabled"
 
-  # Speech recognition (ASR)
+  # Speech Recognition
   asr_url: "https://api.openai.com/v1/audio/transcriptions"
   asr_key: "YOUR_ASR_API_KEY"
 
-  # Text-to-speech (TTS)
+  # Text To Speech
   tts_url: "https://api.elevenlabs.io/v1/tts"
   tts_key: "YOUR_TTS_API_KEY"
 
-voice:
-  wake_word: "Alexa"
-  languages:
-    default: bn
-    supported: [bn, hi, en]
+  # News Sources
+  news_feeds:
+    - "http://feeds.bbci.co.uk/news/rss.xml"
+    - "https://news.google.com/rss?hl=en-IN&ceid=IN:en"
+    - "https://www.amarujala.com/rss/uttar-pradesh.xml"
+    - "https://www.amarujala.com/rss/kanpur.xml"
+    - "https://www.abpananda.abplive.in/rss/kolkata.xml"
 
 models:
+
   gemini:
     provider: "Gemini"
     api_key: "YOUR_GEMINI_API_KEY"
+
   chatgpt:
     provider: "ChatGPT"
     api_key: "YOUR_CHATGPT_API_KEY"
+
   qwen:
     provider: "Qwen"
     api_key: "YOUR_QWEN_API_KEY"
+    
