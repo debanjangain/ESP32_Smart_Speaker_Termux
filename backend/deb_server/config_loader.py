@@ -1,24 +1,45 @@
+from pathlib import Path
 import yaml
-import os
+
 
 class Config:
     _config = None
 
     @classmethod
-    def load(cls, path="config_master.yaml"):
-        if cls._config is None:
-            with open(path, "r") as f:
-                cls._config = yaml.safe_load(f)
+    def load(cls, path=None):
+
+        if cls._config is not None:
+            return cls._config
+
+        if path is None:
+            path = Path(__file__).parent / "config_master.yaml"
+
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                cls._config = yaml.safe_load(f) or {}
+        except FileNotFoundError:
+            raise RuntimeError(f"Config file not found: {path}")
+
         return cls._config
 
     @classmethod
     def get(cls, key_path, default=None):
-        config = cls.load()
-        keys = key_path.split(".")
-        value = config
-        for k in keys:
-            if k in value:
-                value = value[k]
-            else:
+
+        value = cls.load()
+
+        for key in key_path.split("."):
+
+            if not isinstance(value, dict):
                 return default
+
+            if key not in value:
+                return default
+
+            value = value[key]
+
         return value
+
+    @classmethod
+    def reload(cls):
+        cls._config = None
+        
