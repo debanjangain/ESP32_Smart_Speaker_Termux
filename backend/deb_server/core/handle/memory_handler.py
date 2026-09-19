@@ -6,6 +6,13 @@ from database.sqlite_db import (
 
 
 async def process_memory(websocket, message):
+    """
+    Memory commands:
+
+    MEM:REMEMBER:<key>:<value>
+    MEM:RECALL:<key>
+    MEM:FORGET:<key>
+    """
 
     try:
         parts = message.split(":")
@@ -49,13 +56,16 @@ async def process_memory(websocket, message):
             await websocket.send("MEM:OK")
 
         else:
+
             await websocket.send(
                 "MEM:ERROR:Unknown action"
             )
 
     except Exception as e:
 
-        await websocket.send(
-            f"MEM:ERROR:{e}"
-        )
+        error_msg = f"MEM:ERROR:{e}"
+
+        print(error_msg)
+
+        await websocket.send(error_msg)
         
