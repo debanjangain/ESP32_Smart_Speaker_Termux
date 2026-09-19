@@ -1,7 +1,13 @@
-idf_component_register(
-    SRCS
-        "wakenet.c"
+idf_component_register()
 
-    INCLUDE_DIRS
-        "."
+target_add_binary_data(
+    ${COMPONENT_TARGET}
+    "wn9_data"
+    BINARY
+)
+
+target_add_binary_data(
+    ${COMPONENT_TARGET}
+    "wn9_index"
+    BINARY
 )
