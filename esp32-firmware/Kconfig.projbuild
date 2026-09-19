@@ -3,43 +3,41 @@ menu "ESP32 Music Project Configuration"
 config WIFI_SSID
     string "Wi-Fi SSID"
     default "YOUR_WIFI_SSID"
-    help
-        Enter the name of your Wi-Fi network.
 
 config WIFI_PASS
     string "Wi-Fi Password"
     default "YOUR_WIFI_PASSWORD"
-    help
-        Enter the password of your Wi-Fi network.
 
 config SERVER_URI
     string "Backend WebSocket server URI"
-    default "ws://192.168.1.100:8765"
-    help
-        Address of the backend server for audio streaming.
+    default "ws://YOUR_SERVER_IP:8765"
 
 config WAKE_TASK_STACK
     int "Wake word task stack size"
     default 4096
-    help
-        Stack size (in bytes) for the wake word detection task.
 
 config WAKE_TASK_PRIORITY
     int "Wake word task priority"
     default 5
-    help
-        FreeRTOS priority for the wake word detection task.
+
+config AUDIO_TASK_STACK
+    int "Audio task stack size"
+    default 4096
+
+config AUDIO_TASK_PRIORITY
+    int "Audio task priority"
+    default 6
 
 config STREAM_TASK_STACK
     int "Streaming task stack size"
     default 4096
-    help
-        Stack size (in bytes) for the backend streaming task.
 
 config STREAM_TASK_PRIORITY
     int "Streaming task priority"
     default 4
-    help
-        FreeRTOS priority for the backend streaming task.
+
+config WS_RECONNECT_MS
+    int "WebSocket reconnect delay (ms)"
+    default 5000
 
 endmenu
