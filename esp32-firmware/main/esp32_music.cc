@@ -1,5 +1,5 @@
 #include "esp32_music.h"
-#include "network_config.c"
+#include "network_config.h"
 #include "esp_sr_wakenet.h"
 #include "driver/i2s.h"
 #include "freertos/FreeRTOS.h"
@@ -7,6 +7,7 @@
 #include "esp_log.h"
 #include "nvs_flash.h"
 #include "esp_wifi.h"
+#include <string.h>
 
 #include "websocket_client.h"   // from components/websocket_client
 #include "audio_codec.h"        // from components/audio_codec
