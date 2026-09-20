@@ -1,31 +1,43 @@
 #pragma once
 
+#include "driver/gpio.h"
+
 // =======================
 // Wi-Fi + Backend Config
 // =======================
-// These values come from Kconfig.projbuild via menuconfig
-#define WIFI_SSID   CONFIG_WIFI_SSID
-#define WIFI_PASS   CONFIG_WIFI_PASS
-#define SERVER_URI  CONFIG_SERVER_URI
+// Values supplied by menuconfig
+#define WIFI_SSID      CONFIG_WIFI_SSID
+#define WIFI_PASS      CONFIG_WIFI_PASS
+#define SERVER_URI     CONFIG_SERVER_URI
 
 // =======================
-// 🎤 INMP441 I2S Microphone
+// INMP441 I2S Microphone
 // =======================
-// Hardware wiring:
-// VDD → 3.3V
-// GND → GND
-// L/R → GND
-#define MIC_SD   GPIO_NUM_8    // Serial Data
-#define MIC_WS   GPIO_NUM_46   // Word Select (LRCLK)
-#define MIC_SCK  GPIO_NUM_9    // Serial Clock
+// VDD -> 3.3V
+// GND -> GND
+// L/R -> GND
+
+#define MIC_SD         GPIO_NUM_8
+#define MIC_WS         GPIO_NUM_46
+#define MIC_SCK        GPIO_NUM_9
 
 // =======================
-// 🔊 MAX98357A I2S Amplifier
+// MAX98357A I2S Amplifier
 // =======================
-// Hardware wiring:
-// VIN → 5V
-// GND → GND
-// GAIN → GND
-#define AMP_LRC  GPIO_NUM_10   // LRCLK
-#define AMP_DIN  GPIO_NUM_3    // Data In
-#define AMP_BCLK GPIO_NUM_11   // Bit Clock
+// VIN  -> 5V
+// GND  -> GND
+// GAIN -> GND
+
+#define AMP_DIN        GPIO_NUM_3
+#define AMP_LRC        GPIO_NUM_10
+#define AMP_BCLK       GPIO_NUM_11
+
+// =======================
+// Task Configuration
+// =======================
+
+#define CONFIG_WAKE_TASK_STACK      8192
+#define CONFIG_STREAM_TASK_STACK    6144
+
+#define CONFIG_WAKE_TASK_PRIORITY   5
+#define CONFIG_STREAM_TASK_PRIORITY 4
