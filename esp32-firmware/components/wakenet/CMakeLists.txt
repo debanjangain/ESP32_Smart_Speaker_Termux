@@ -1,13 +1,13 @@
 idf_component_register()
 
-target_add_binary_data(
-    ${COMPONENT_TARGET}
-    "wn9_data"
-    BINARY
+foreach(model_file
+    wn9_data
+    wn9_index
+    _MODEL_INFO_
 )
-
-target_add_binary_data(
-    ${COMPONENT_TARGET}
-    "wn9_index"
-    BINARY
-)
+    target_add_binary_data(
+        ${COMPONENT_TARGET}
+        "${model_file}"
+        BINARY
+    )
+endforeach()
