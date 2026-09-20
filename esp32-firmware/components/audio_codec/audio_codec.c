@@ -1,4 +1,3 @@
-Audiocodec.c
 #include "audio_codec.h"
 #include "esp32_music.h"
 #include "driver/i2s.h"
