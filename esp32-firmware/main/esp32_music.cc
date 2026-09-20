@@ -74,44 +74,69 @@ void audio_codec_init() {
 // =======================
 // Task: Wake Word Detection
 // =======================
-void wake_word_task(void *param) {
-    uint8_t buffer[1024];
-    size_t bytes_read;
+while (true)
+{
+    bytes_read =
+        audio_codec_read(
+            buffer,
+            sizeof(buffer));
 
-    while (true) {
-        i2s_read(I2S_NUM_0, buffer, sizeof(buffer), &bytes_read, portMAX_DELAY);
-        int detected = model->detect(wakenet, (int16_t *)buffer);
-        if (detected) {
-            ESP_LOGI(TAG, "Wake word 'Alexa' detected!");
-            websocket_client_send("WAKE: Alexa", strlen("WAKE: Alexa"));
+    if (bytes_read > 0)
+    {
+        int detected =
+            model->detect(
+                wakenet,
+                (int16_t *)buffer);
+
+        if (detected > 0)
+        {
+            ESP_LOGI(
+                TAG,
+                "Wake word 'Alexa' detected!");
+
+            websocket_client_send(
+                (const uint8_t *)"WAKE: Alexa",
+                strlen("WAKE: Alexa"));
         }
-        vTaskDelay(pdMS_TO_TICKS(10));
     }
+
+    vTaskDelay(pdMS_TO_TICKS(10));
 }
+
 
 // =======================
 // Task: Backend Streaming
 // =======================
 void streaming_task(void *param) {
-    uint8_t buffer[1024];
-    size_t bytes_read, bytes_written;
+while (true)
+{
+    int bytes_read =
+        audio_codec_read(
+            buffer,
+            sizeof(buffer));
 
-    while (true) {
-        // Capture audio from mic and send upstream
-        i2s_read(I2S_NUM_0, buffer, sizeof(buffer), &bytes_read, portMAX_DELAY);
-        if (bytes_read > 0) {
-            websocket_client_send(buffer, bytes_read);
-        }
-
-        // Receive audio from backend and play
-        int recv_len = websocket_client_receive(buffer, sizeof(buffer));
-        if (recv_len > 0) {
-            i2s_write(I2S_NUM_1, buffer, recv_len, &bytes_written, portMAX_DELAY);
-        }
-
-        vTaskDelay(pdMS_TO_TICKS(10));
+    if (bytes_read > 0)
+    {
+        websocket_client_send(
+            buffer,
+            bytes_read);
     }
+
+    int recv_len =
+        websocket_client_receive(
+            buffer,
+            sizeof(buffer));
+
+    if (recv_len > 0)
+    {
+        audio_codec_write(
+            buffer,
+            recv_len);
+    }
+
+    vTaskDelay(pdMS_TO_TICKS(10));
 }
+
 
 // =======================
 // Main Application
@@ -119,32 +144,78 @@ void streaming_task(void *param) {
 extern "C" void app_main(void) {
     // Initialize NVS (needed for Wi-Fi)
     esp_err_t ret = nvs_flash_init();
-    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-        ESP_ERROR_CHECK(nvs_flash_erase());
-        ret = nvs_flash_init();
-    }
-    ESP_ERROR_CHECK(ret);
+    if (ret == ESP_ERR_NVS_NO_FREE_PAGES ||
+    ret == ESP_ERR_NVS_NEW_VERSION_FOUND)
+{
+    ESP_ERROR_CHECK(
+        nvs_flash_erase());
 
-    ESP_LOGI(TAG, "Starting ESP32 Smart Speaker...");
+    ret =
+        nvs_flash_init();
+}
 
-    // Step 1: Connect to Wi-Fi
-    ESP_LOGI(TAG, "Connecting to Wi-Fi SSID: %s", WIFI_SSID);
-    wifi_init_sta(WIFI_SSID, WIFI_PASS);
+ESP_ERROR_CHECK(ret);
 
-    // Step 2: Initialize audio codec (mic + amp)
-    audio_codec_init();
+ESP_LOGI(
+    TAG,
+    "Starting ESP32 Smart Speaker...");
 
-    // Step 3: Load WakeNet model (Alexa)
-    model = esp_sr_wakenet_get_model("wn9");
-    wakenet = model->create(model);
-    ESP_LOGI(TAG, "WakeNet Alexa model initialized.");
+// Connect Wi-Fi
+ESP_LOGI(
+    TAG,
+    "Connecting to Wi-Fi SSID: %s",
+    WIFI_SSID);
 
-    // Step 4: Connect to backend via WebSocket
-    ESP_LOGI(TAG, "Connecting to backend server: %s", SERVER_URI);
-    websocket_client_start(SERVER_URI);
+wifi_init_sta(
+    WIFI_SSID,
+    WIFI_PASS);
 
-    // Step 5: Create tasks
-    xTaskCreatePinnedToCore(
+wifi_wait_connected();
+
+// Initialize audio
+audio_codec_init();
+
+// Load WakeNet
+model =
+    esp_sr_wakenet_get_model(
+        "wn9");
+
+if (model == NULL)
+{
+    ESP_LOGE(
+        TAG,
+        "WakeNet model not found");
+
+    return;
+}
+
+wakenet =
+    model->create(model);
+
+if (wakenet == NULL)
+{
+    ESP_LOGE(
+        TAG,
+        "Failed to create WakeNet");
+
+    return;
+}
+
+ESP_LOGI(
+    TAG,
+    "WakeNet initialized");
+
+// Connect backend
+ESP_LOGI(
+    TAG,
+    "Connecting to backend: %s",
+    SERVER_URI);
+
+websocket_client_start(
+    SERVER_URI);
+
+// Create tasks
+xTaskCreatePinnedToCore(
     wake_word_task,
     "wake_word_task",
     CONFIG_WAKE_TASK_STACK,
@@ -153,7 +224,7 @@ extern "C" void app_main(void) {
     NULL,
     0);
 
-    xTaskCreatePinnedToCore(
+xTaskCreatePinnedToCore(
     streaming_task,
     "streaming_task",
     CONFIG_STREAM_TASK_STACK,
@@ -161,4 +232,8 @@ extern "C" void app_main(void) {
     CONFIG_STREAM_TASK_PRIORITY,
     NULL,
     1);
+
+ESP_LOGI(
+    TAG,
+    "Smart Speaker Ready");
 }
