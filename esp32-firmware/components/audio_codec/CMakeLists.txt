@@ -1,10 +1,10 @@
 idf_component_register(
     SRCS
-        "websocket_client.c"
+        "audio_codec.c"
 
     INCLUDE_DIRS
         "."
 
     REQUIRES
-        esp_websocket_client
+        esp_audio_codec
 )
