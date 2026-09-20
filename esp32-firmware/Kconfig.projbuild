@@ -2,11 +2,11 @@ menu "ESP32 Music Project Configuration"
 
 config WIFI_SSID
     string "Wi-Fi SSID"
-    default "YOUR_WIFI_SSID"
+    default "moto g45 5G"
 
 config WIFI_PASS
     string "Wi-Fi Password"
-    default "YOUR_WIFI_PASSWORD"
+    default "7278346049"
 
 config SERVER_URI
     string "Backend WebSocket server URI"
