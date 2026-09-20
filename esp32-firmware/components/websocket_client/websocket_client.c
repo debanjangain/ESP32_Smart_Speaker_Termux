@@ -22,11 +22,25 @@ void websocket_client_start(const char* uri) {
 // =======================
 // Send Data
 // =======================
-void websocket_client_send(const uint8_t* data, size_t len) {
-    if (esp_websocket_client_is_connected(client)) {
-        esp_websocket_client_send_bin(client, (const char*)data, len, portMAX_DELAY);
+void websocket_client_send(
+    const uint8_t *data,
+    size_t len)
+{
+    if (client == NULL)
+    {
+        return;
+    }
+
+    if (esp_websocket_client_is_connected(client))
+    {
+        esp_websocket_client_send_bin(
+            client,
+            (const char *)data,
+            len,
+            portMAX_DELAY);
     }
 }
+
 
 // =======================
 // Receive Data
