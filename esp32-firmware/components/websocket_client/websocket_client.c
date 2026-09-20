@@ -1,22 +1,41 @@
 #include "websocket_client.h"
+
 #include "esp_websocket_client.h"
 #include "esp_log.h"
 
 static const char *TAG = "WS_CLIENT";
-static esp_websocket_client_handle_t client;
+
+static esp_websocket_client_handle_t client = NULL;
 
 // =======================
 // Start WebSocket Client
 // =======================
-void websocket_client_start(const char* uri) {
+void websocket_client_start(const char *uri)
+{
     esp_websocket_client_config_t websocket_cfg = {
         .uri = uri,
     };
 
     client = esp_websocket_client_init(&websocket_cfg);
-    esp_websocket_client_start(client);
 
-    ESP_LOGI(TAG, "WebSocket client started, URI: %s", uri);
+    if (client == NULL)
+    {
+        ESP_LOGE(TAG, "Failed to initialize WebSocket client");
+        return;
+    }
+
+    esp_err_t err =
+        esp_websocket_client_start(client);
+
+    if (err != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to start WebSocket client");
+        return;
+    }
+
+    ESP_LOGI(TAG,
+             "WebSocket client started: %s",
+             uri);
 }
 
 // =======================
@@ -41,14 +60,29 @@ void websocket_client_send(
     }
 }
 
-
 // =======================
 // Receive Data
 // =======================
-int websocket_client_receive(uint8_t* buffer, size_t max_len) {
-    if (esp_websocket_client_is_connected(client)) {
-        int len = esp_websocket_client_recv_bin(client, (char*)buffer, max_len, portMAX_DELAY);
+int websocket_client_receive(
+    uint8_t *buffer,
+    size_t max_len)
+{
+    if (client == NULL)
+    {
+        return 0;
+    }
+
+    if (esp_websocket_client_is_connected(client))
+    {
+        int len =
+            esp_websocket_client_recv_bin(
+                client,
+                (char *)buffer,
+                max_len,
+                portMAX_DELAY);
+
         return len;
     }
+
     return 0;
 }
